@@ -21,46 +21,19 @@
 </head>
 <body>
     <nav class="nav nav-pills flex-column flex-sm-row ml-5 mt-2">
-        <a class="flex-sm-fill text-sm-center nav-link" href="./index.html" style="color: white;">Home</a>
         <a class="flex-sm-fill text-sm-center nav-link  active" href="./dashboard.html" style="color: white;">Dashboard</a>
         <a class="flex-sm-fill text-sm-center nav-link logout" onclick="logout();" href="#" style="color: white;">Logout</a>
     </nav>
-    <div class="outerbox">
-        <div class="container innerbox">
-            <form onsubmit="getshort();return false">
-                <div class="form-group">
-                  <label for="longurl">Long URL</label>
-                  <input type="text" class="form-control" id="longurl" placeholder="Enter Long URL">
-                </div>
-                <button type="submit" class="btn btn-primary">Create Short</button>
-            </form>
-        </div>
-    </div>
-    <div class="container">
-        <div class="row">
-            <table class="table text-sm-center">
-                <thead>
-                    <tr>
-                        <th scope="col" style="color: white;">Index</th>
-                        <th scope="col" style="color: white;">Long URL</th>
-                        <th scope="col" style="color: white;">Short URL</th>
-                        <th scope="col" style="color: white;">Count</th>
-                    </tr>
-                </thead>
-                <tbody id="links">
-                </tbody>
-            </table>
-            <span id="no-data"></span>
-        </div>
-    </div>
+    
     <script>
         let token = localStorage.getItem("token")
         if(token=="null" || token==undefined){
             alert("Please Login");
             window.location.assign("/")
         }
-        (async function(){
-            let res = await fetch("https://urlshortener-zen.herokuapp.com/dashboard/data",{
+        
+        async function role(){
+            let res = await fetch("https://pathshala-ecommerce.herokuapp.com/role",{
                 method:"GET",
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,54 +41,15 @@
                 }
             })
             let data = await res.json()
-            for(let i=0;i<data.Outdata.length;i++){
-                let tr = document.createElement("tr")
-                let td1 = document.createElement("td")
-                td1.innerText = i+1
-                td1.setAttribute("style","color:white;")
-
-                let td2 = document.createElement("td")
-                td2.innerHTML = `<a href="${data.Outdata[i].longURL}" style="color:white;">${data.Outdata[i].longURL}</a>`
-                td2.setAttribute("style","color:white;")
-
-                let td3 = document.createElement("td")
-                td3.innerHTML = `<a href="${data.Outdata[i].shortURL}" style="color:white;">${data.Outdata[i].shortURL}</a>`
-                td3.setAttribute("style","color:white;")
-
-                let td4 = document.createElement("td")
-                td4.innerText = data.Outdata[i].count
-                td4.setAttribute("style","color:white;")
-
-                tr.append(td1,td2,td3,td4)
-                let tbody = document.getElementById("links")
-                tbody.appendChild(tr)
+            //console.log(data["role"])
+            let role = data["role"]
+            if(role=="client"){
+                window.location.assign("/dashboard_client.html")
+            }else{
+                window.location.assign("/dashboard_admin.html")
             }
-        })();
-
-        
-        async function getshort(){
-            let longurl = document.getElementById("longurl").value
-            console.log(longurl)
-            let data = {
-                url:longurl
-            }
-            let res = await fetch("https://urlshortener-zen.herokuapp.com/shorturl",{
-                method:"POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    "authorization": token,
-                },
-                body:JSON.stringify(data)
-            })
-            let resData = await res.json()
-            alert(resData.shorturl)
-            window.location.assign("dashboard.html")
         }
-
-        function logout(){
-            localStorage.setItem('token', null);
-            window.location.assign('/')
-        }
+        role();
     </script>
 </body>
 </html>
